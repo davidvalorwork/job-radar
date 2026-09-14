@@ -1,0 +1,174 @@
+# Planning catalog, not a declaration of working integrations or authorized access.
+# command_refs are discovery hints, never executable shell strings.
+# All access_status values remain unverified until a future capability probe runs.
+schema_version: 1
+sources:
+  - id: google
+    label: Google
+    category: web_search
+    url: https://www.google.com
+    enabled: true
+    priority: 90
+    query_support: keyword
+    command_refs: [google/search]
+  - id: duckduckgo
+    label: DuckDuckGo
+    category: web_search
+    url: https://duckduckgo.com
+    enabled: true
+    priority: 80
+    query_support: keyword
+    command_refs: [duckduckgo/search]
+  - id: brave
+    label: Brave Search
+    category: web_search
+    url: https://search.brave.com
+    enabled: true
+    query_support: keyword
+    command_refs: [brave/search]
+  - id: linkedin_jobs
+    label: LinkedIn Jobs
+    category: social
+    url: https://www.linkedin.com/jobs
+    enabled: true
+    priority: 100
+    query_support: keyword
+    command_refs: [linkedin/search, linkedin/job-detail]
+  - id: linkedin_posts
+    label: LinkedIn Posts
+    category: social
+    query_support: target_only
+    command_refs: [linkedin/posts, linkedin/profile-read]
+  - id: twitter
+    label: X / Twitter
+    category: social
+    url: https://x.com
+    enabled: true
+    priority: 85
+    query_support: keyword
+    command_refs: [twitter/search, twitter/thread, twitter/profile]
+  - id: reddit
+    label: Reddit
+    category: social
+    url: https://www.reddit.com
+    enabled: true
+    query_support: keyword
+    command_refs: [reddit/search, reddit/subreddit, reddit/read]
+  - id: facebook
+    label: Facebook
+    category: social
+    url: https://www.facebook.com
+    query_support: keyword
+    command_refs: [facebook/search, facebook/groups, facebook/profile]
+  - id: instagram
+    label: Instagram
+    category: social
+    query_support: target_only
+    command_refs: [instagram/search, instagram/profile]
+  - id: bluesky
+    label: Bluesky
+    category: social
+    url: https://bsky.app
+    query_support: keyword
+    command_refs: [bluesky/search, bluesky/thread, bluesky/profile]
+  - id: indeed
+    label: Indeed
+    category: job_board
+    url: https://www.indeed.com
+    enabled: true
+    query_support: keyword
+    command_refs: [indeed/search, indeed/job]
+  - id: remoteok
+    label: Remote OK
+    category: job_board
+    url: https://remoteok.com
+    enabled: true
+    priority: 75
+    query_support: domain
+    command_refs: [web/read]
+  - id: weworkremotely
+    label: We Work Remotely
+    category: job_board
+    url: https://weworkremotely.com
+    enabled: true
+    query_support: domain
+    command_refs: [web/read]
+  - id: remotive
+    label: Remotive
+    category: job_board
+    url: https://remotive.com
+    enabled: true
+    query_support: domain
+    command_refs: [web/read]
+  - id: wellfound
+    label: Wellfound
+    category: job_board
+    url: https://wellfound.com
+    enabled: true
+    query_support: domain
+    command_refs: [web/read]
+  - id: getonbrd
+    label: Get on Board
+    category: job_board
+    url: https://www.getonbrd.com
+    enabled: true
+    query_support: domain
+    command_refs: [web/read]
+  - id: cryptojobslist
+    label: Crypto Jobs List
+    category: job_board
+    url: https://cryptojobslist.com
+    query_support: domain
+    command_refs: [web/read]
+  - id: web3career
+    label: Web3 Career
+    category: job_board
+    url: https://web3.career
+    query_support: domain
+    command_refs: [web/read]
+  - id: hackernews
+    label: Hacker News
+    category: community
+    url: https://news.ycombinator.com
+    enabled: true
+    query_support: keyword
+    command_refs: [hackernews/search, hackernews/jobs, hackernews/read]
+  - id: github
+    label: GitHub public hiring pages
+    category: community
+    url: https://github.com
+    query_support: domain
+    command_refs: [web/read]
+    tags: [public_hiring_only, no_commit_email_harvesting]
+  - id: company_pages
+    label: Company career pages
+    category: company_page
+    query_support: target_only
+    command_refs: [web/read]
+  - id: greenhouse
+    label: Greenhouse hosted career pages
+    category: company_page
+    query_support: target_only
+    command_refs: [web/read]
+  - id: lever
+    label: Lever hosted career pages
+    category: company_page
+    query_support: target_only
+    command_refs: [web/read]
+  - id: ashby
+    label: Ashby hosted career pages
+    category: company_page
+    query_support: target_only
+    command_refs: [web/read]
+  - id: rss
+    label: RSS / Atom
+    category: feed
+    query_support: unavailable
+  - id: telegram
+    label: Telegram
+    category: community
+    query_support: unavailable
+  - id: discord
+    label: Discord
+    category: community
+    query_support: unavailable

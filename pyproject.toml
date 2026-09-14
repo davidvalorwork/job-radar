@@ -1,0 +1,60 @@
+[project]
+name = "job-radar"
+version = "0.1.0"
+description = "Local-first job discovery with hexagonal boundaries and auditable offline workflows."
+readme = "README.md"
+requires-python = ">=3.14,<3.15"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{name = "Job Radar contributors"}]
+dependencies = [
+  "pydantic>=2.13.5,<3",
+  "pyyaml>=6.0.3,<7",
+  "structlog>=26.1.0,<27",
+  "psutil>=7.2.2,<8",
+  "prometheus-client>=0.26.0,<0.27",
+]
+
+[project.urls]
+Repository = "https://github.com/davidvalorwork/job-radar"
+Issues = "https://github.com/davidvalorwork/job-radar/issues"
+
+[project.scripts]
+radar = "job_radar.bootstrap:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.4,<10",
+  "pytest-cov>=6,<8",
+  "ruff>=0.12,<1",
+  "mypy>=1.18,<2",
+  "types-PyYAML>=6.0,<7",
+  "types-psutil>=7,<8",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13"]
+build-backend = "uv_build"
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["src"]
+
+[tool.coverage.run]
+source = ["job_radar"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true

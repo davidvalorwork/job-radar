@@ -1,0 +1,31 @@
+# Generic, offline configuration. Personal overrides belong in ignored config/local*.yaml.
+schema_version: 1
+sources_file: sources.yaml
+profiles:
+  - id: devops
+    priority: 100
+    title_terms: [devops, sre, site reliability, platform engineer, cloud engineer]
+    preferred_terms: [kubernetes, terraform, linux, aws, azure, gcp, ci/cd]
+    queries:
+      - 'remote DevOps engineer hiring'
+      - 'remote SRE platform engineer'
+      - 'remote cloud engineer terraform kubernetes'
+  - id: fullstack_ai
+    priority: 80
+    title_terms: [full stack, full-stack, fullstack, ai engineer]
+    required_context_any: [ai, artificial intelligence, llm, rag, generative]
+    preferred_terms: [python, typescript, react, llm, rag]
+    queries:
+      - 'remote full stack AI engineer hiring'
+      - 'remote fullstack LLM RAG'
+filters:
+  remote_only: true
+  max_age_days: 30
+  languages: [en, es]
+  excluded_companies: []
+runtime:
+  network_enabled: false
+  sending_enabled: false
+  batch_size: 100
+  max_records: 2000
+  max_queries: 80
