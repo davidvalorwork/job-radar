@@ -60,7 +60,7 @@ def test_catalog_selection(capsys):
     "args",
     [
         ["plan", "--limit", "0"],
-        ["plan", "--limit", "81"],
+        ["plan", "--limit", "201"],
         ["catalog", "--source", "not_registered"],
     ],
 )

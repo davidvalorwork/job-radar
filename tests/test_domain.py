@@ -8,6 +8,55 @@ from job_radar.domain.models import Decision, FilterPolicy, canonical_url
 from job_radar.domain.qualification import contains_term, evaluate
 
 
+@pytest.mark.parametrize(
+    "description",
+    [
+        "Salary: $120k-$180k per year",
+        "USD 60000/year",
+        "$4000/mo",
+        "Equity-only until seed funding; cash compensation afterwards.",
+        "No cash salary until funding.",
+    ],
+)
+def test_undisclosed_flag_cannot_hide_explicit_compensation(job, profiles, now, description):
+    policy = FilterPolicy(min_monthly_salary_usd=2000)
+    result = evaluate(replace(job, description=description), profiles, policy, now)
+    assert result.decision == Decision.REVIEW
+    assert "salary_evidence_requires_review" in result.reasons
+
+
+def test_conditional_equity_is_not_current_cash_salary(job, profiles, now):
+    item = replace(
+        job,
+        description="Equity-only pre-seed, $200k post-seed",
+        salary_disclosed=True,
+        salary_min_monthly_usd=16000,
+    )
+    result = evaluate(item, profiles, FilterPolicy(min_monthly_salary_usd=2000), now)
+    assert result.decision == Decision.REVIEW
+
+
+@pytest.mark.parametrize(
+    "description",
+    [
+        "Raised $5M in funding. Salary not disclosed.",
+        "Paid salary plus equity.",
+        "This is not equity-only.",
+        "We have 120000 users.",
+    ],
+)
+def test_funding_and_equity_bonus_are_not_salary_evidence(job, profiles, now, description):
+    assert (
+        evaluate(
+            replace(job, description=description),
+            profiles,
+            FilterPolicy(min_monthly_salary_usd=2000),
+            now,
+        ).decision
+        == Decision.QUALIFIED
+    )
+
+
 def test_canonical_identity(job):
     alternate = replace(
         job, source_id="indeed", url="https://EXAMPLE.com:443/jobs/1?utm_source=x#top"

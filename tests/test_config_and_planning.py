@@ -18,6 +18,28 @@ def test_generic_catalog():
     assert load_bundle(ROOT / "config/example.yaml")[2] == fingerprint
 
 
+def test_example_search_equation_covers_requested_roles_and_technologies():
+    config, _, _ = load_bundle(ROOT / "config/example.yaml")
+    profiles = {profile.id: profile for profile in config.profiles}
+    assert set(profiles) >= {
+        "devops",
+        "fullstack_ai",
+        "backend_engineering",
+        "frontend_engineering",
+        "fullstack_web",
+        "serverless_lambda",
+    }
+    queries = " ".join(
+        query.casefold() for profile in profiles.values() for query in profile.queries
+    )
+    for technology in ("node.js", "python", "django", "react", "angular", "lambda"):
+        assert technology in queries
+    assert [
+        profiles[profile_id].priority
+        for profile_id in ("devops", "fullstack_ai", "backend_engineering")
+    ] == [100, 80, 75]
+
+
 @pytest.mark.parametrize("field", ["network_enabled", "sending_enabled"])
 def test_cannot_enable_external_side_effects(field):
     config, _, _ = load_bundle(ROOT / "config/example.yaml")

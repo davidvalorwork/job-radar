@@ -14,18 +14,83 @@ profiles:
     priority: 80
     title_terms: [full stack, full-stack, fullstack, ai engineer]
     required_context_any: [ai, artificial intelligence, llm, rag, generative]
-    preferred_terms: [python, typescript, react, llm, rag]
+    preferred_terms: [python, typescript, react, angular, node.js, django, aws lambda, llm, rag]
     queries:
       - 'remote full stack AI engineer hiring'
       - 'remote fullstack LLM RAG'
+  - id: backend_engineering
+    priority: 75
+    title_terms:
+      - backend
+      - back-end
+      - back end
+      - backend engineer
+      - backend developer
+      - node.js
+      - node.js engineer
+      - nodejs
+      - nodejs engineer
+      - node developer
+      - python developer
+      - python engineer
+      - django
+      - django developer
+      - django engineer
+      - api engineer
+    preferred_terms: [node.js, nodejs, python, django, typescript, postgresql, docker]
+    queries:
+      - 'remote backend Node.js Python Django engineer hiring'
+      - 'remote Node.js developer Python Django API jobs'
+      - 'remote backend engineer salary email'
+  - id: frontend_engineering
+    priority: 70
+    title_terms:
+      - frontend
+      - front-end
+      - front end
+      - frontend engineer
+      - frontend developer
+      - react developer
+      - react engineer
+      - angular developer
+      - angular engineer
+      - ui engineer
+      - web developer
+    preferred_terms: [react, angular, typescript, javascript, next.js, css, html]
+    queries:
+      - 'remote frontend React Angular engineer hiring'
+      - 'remote React developer Angular TypeScript jobs'
+  - id: fullstack_web
+    priority: 68
+    title_terms:
+      - full stack
+      - full-stack
+      - fullstack
+      - full stack developer
+      - full stack engineer
+      - fullstack engineer
+      - web application engineer
+    preferred_terms: [react, angular, node.js, python, django, typescript]
+    queries:
+      - 'remote full stack React Node.js Python Django developer'
+      - 'remote full stack Angular TypeScript engineer hiring'
+  - id: serverless_lambda
+    priority: 65
+    title_terms: [serverless, serverless engineer, serverless developer, lambda engineer, lambda developer, aws lambda, cloud function]
+    preferred_terms: [aws lambda, lambda, serverless, node.js, python, typescript, terraform]
+    queries:
+      - 'remote AWS Lambda serverless engineer hiring'
+      - 'remote serverless Python Node.js developer'
 filters:
   remote_only: true
   max_age_days: 30
   languages: [en, es]
   excluded_companies: []
+  min_monthly_salary_usd: null
+  include_undisclosed_salary: true
 runtime:
   network_enabled: false
   sending_enabled: false
   batch_size: 100
   max_records: 2000
-  max_queries: 80
+  max_queries: 200

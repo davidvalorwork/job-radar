@@ -2,17 +2,43 @@ name: CI
 
 on:
   push:
+    branches: [main, develop, 'codex/**']
   pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  merge_group:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  verify:
+  static:
+    name: Static quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9  # v7
+        with:
+          version: '0.12.13'
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run python scripts/quality.py check
+      - name: Repository hygiene hooks
+        env:
+          # CI checks remote refs in git-policy; checkout may be detached here.
+          SKIP: branch-policy
+        run: uv run pre-commit run --all-files
+
+  tests:
+    name: Tests (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -20,20 +46,59 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
-        with:
-          python-version-file: .python-version
-      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9 # v7
+      - uses: astral-sh/setup-uv@94527f2e458b27549849d47d273a16bec83a01e9  # v7
         with:
           version: '0.12.13'
           enable-cache: true
       - run: uv sync --locked
       - run: uv run radar doctor
-      - run: uv run ruff check .
-      - run: uv run ruff format --check .
-      - run: uv run mypy
-      - run: uv run pytest --cov --cov-fail-under=85
-      - run: uv build
+      - run: uv run python scripts/quality.py test
+      - run: uv run python scripts/quality.py build
+      - name: Test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        with:
+          name: reports-${{ matrix.os }}
+          path: reports/*.xml
+          if-no-files-found: ignore
+          retention-days: 7
+
+  git-policy:
+    name: Git Flow policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09  # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1  # v6
+        with:
+          python-version-file: .python-version
+      - name: Validate PR title and branch route
+        if: ${{ github.event_name == 'pull_request' }}
+        run: python scripts/git_policy.py pr
+      - name: Validate pushed working branch
+        if: ${{ github.event_name == 'push' && startsWith(github.ref_name, 'codex/') }}
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+        run: python scripts/git_policy.py branch --name "$BRANCH_NAME"
+
+  quality-gate:
+    name: Quality gate
+    needs: [static, tests, git-policy]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require all checks to pass
+        env:
+          STATIC_RESULT: ${{ needs.static.result }}
+          TEST_RESULT: ${{ needs.tests.result }}
+          POLICY_RESULT: ${{ needs.git-policy.result }}
+        run: |
+          test "$STATIC_RESULT" = success
+          test "$TEST_RESULT" = success
+          test "$POLICY_RESULT" = success

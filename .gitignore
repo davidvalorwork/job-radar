@@ -1,4 +1,5 @@
 .venv/
+node_modules/
 .runtime/
 .local/
 .codegraph/
@@ -9,6 +10,7 @@ __pycache__/
 .mypy_cache/
 .coverage*
 htmlcov/
+reports/
 dist/
 build/
 *.egg-info/

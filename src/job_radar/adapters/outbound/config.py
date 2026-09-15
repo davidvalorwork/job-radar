@@ -52,9 +52,11 @@ class ProfileConfig(StrictModel):
 
 class FiltersConfig(StrictModel):
     remote_only: bool = True
-    max_age_days: int = Field(default=30, ge=1, le=3650)
+    max_age_days: int | None = Field(default=30, ge=1, le=3650)
     languages: list[str] = Field(default_factory=lambda: ["en", "es"], max_length=20)
     excluded_companies: list[str] = Field(default_factory=list, max_length=1000)
+    min_monthly_salary_usd: float | None = Field(default=None, ge=0, allow_inf_nan=False)
+    include_undisclosed_salary: bool = True
 
     def domain(self) -> FilterPolicy:
         return FilterPolicy(
@@ -62,6 +64,8 @@ class FiltersConfig(StrictModel):
             self.max_age_days,
             tuple(self.languages),
             tuple(self.excluded_companies),
+            self.min_monthly_salary_usd,
+            self.include_undisclosed_salary,
         )
 
 
