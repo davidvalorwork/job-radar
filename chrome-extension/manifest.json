@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Job Radar — local Gmail worker",
+  "version": "0.1.8",
+  "description": "Experimental local Gmail UI transport. No AI, OAuth keys or cookie access.",
+  "permissions": ["scripting"],
+  "host_permissions": ["https://mail.google.com/*", "http://127.0.0.1/*"],
+  "action": {"default_title": "Open Job Radar worker"},
+  "background": {"service_worker": "background.mjs", "type": "module"}
+}

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 from hashlib import sha256
+from math import isfinite
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 
@@ -50,6 +51,9 @@ class Job:
     remote: bool | None = None
     published_at: datetime | None = None
     language: str | None = None
+    salary_min_monthly_usd: float | None = None
+    salary_max_monthly_usd: float | None = None
+    salary_disclosed: bool = False
 
     def __post_init__(self) -> None:
         if not all(
@@ -64,6 +68,15 @@ class Job:
         object.__setattr__(self, "url", canonical_url(self.url))
         if self.published_at is not None and self.published_at.utcoffset() is None:
             raise ValueError("published_at must include a timezone")
+        for amount in (self.salary_min_monthly_usd, self.salary_max_monthly_usd):
+            if amount is not None and (not isfinite(amount) or amount < 0):
+                raise ValueError("Salary amounts must be finite and non-negative")
+        if (
+            self.salary_min_monthly_usd is not None
+            and self.salary_max_monthly_usd is not None
+            and self.salary_min_monthly_usd > self.salary_max_monthly_usd
+        ):
+            raise ValueError("Salary minimum must not exceed maximum")
 
     @property
     def key(self) -> str:
@@ -82,9 +95,17 @@ class RoleProfile:
 @dataclass(frozen=True, slots=True)
 class FilterPolicy:
     remote_only: bool = True
-    max_age_days: int = 30
+    max_age_days: int | None = 30
     languages: tuple[str, ...] = ("en", "es")
     excluded_companies: tuple[str, ...] = ()
+    min_monthly_salary_usd: float | None = None
+    include_undisclosed_salary: bool = True
+
+    def __post_init__(self) -> None:
+        if self.min_monthly_salary_usd is not None and (
+            not isfinite(self.min_monthly_salary_usd) or self.min_monthly_salary_usd < 0
+        ):
+            raise ValueError("Salary threshold must be finite and non-negative")
 
 
 @dataclass(frozen=True, slots=True)

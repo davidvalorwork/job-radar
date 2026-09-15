@@ -1,0 +1,18 @@
+extends: default
+ignore: |
+  .venv/
+  .local/
+  .runtime/
+  .codegraph/
+  .git/
+  build/
+  dist/
+  config/local*
+  config/private/
+rules:
+  document-start: disable
+  line-length:
+    max: 140
+  truthy:
+    allowed-values: ['true', 'false']
+    check-keys: false

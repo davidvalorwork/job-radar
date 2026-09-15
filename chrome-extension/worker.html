@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<title>Job Radar · Gmail local</title>
+<link rel="stylesheet" href="worker.css">
+<main>
+  <h1>Gmail local · experimental</h1>
+  <p id="version">Versión pendiente de cargar</p>
+  <p>Sin IA ni claves de Google. Mantén esta pestaña abierta y no manipules la
+    pestaña de Gmail mientras trabaja. Detener no cancela un envío ya iniciado.</p>
+  <label>Archivo privado de conexión <input id="pairing" type="file" accept=".json"></label>
+  <label>Pestaña de Gmail <select id="gmail"></select></label>
+  <button id="refresh">Actualizar pestañas</button>
+  <label><input id="sending" type="checkbox"> Permitir envíos del lote confirmado en Python</label>
+  <button id="start" disabled>Conectar</button>
+  <button id="stop" disabled>Detener después de la operación actual</button>
+  <p id="status" role="status">Carga .local/chrome/pairing.json. No compartas ese archivo.</p>
+  <p>Si falta un control, la búsqueda es incompleta o no se confirma el envío,
+    se detiene. No se reintenta automáticamente. No hay garantía de entrega al destinatario.</p>
+</main>
+<script type="module" src="worker.mjs"></script>
+</html>

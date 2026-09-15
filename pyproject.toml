@@ -19,6 +19,13 @@ dependencies = [
 Repository = "https://github.com/davidvalorwork/job-radar"
 Issues = "https://github.com/davidvalorwork/job-radar/issues"
 
+[project.optional-dependencies]
+gmail = [
+  "google-api-python-client>=2.180,<3",
+  "google-auth-httplib2>=0.2,<1",
+  "google-auth-oauthlib>=1.2,<2",
+]
+
 [project.scripts]
 radar = "job_radar.bootstrap:main"
 
@@ -30,6 +37,10 @@ dev = [
   "mypy>=1.18,<2",
   "types-PyYAML>=6.0,<7",
   "types-psutil>=7,<8",
+  "pre-commit>=4.6.2,<5",
+  "pre-commit-hooks>=6,<7",
+  "yamllint>=1.38,<2",
+  "actionlint-py==1.7.12.24",
 ]
 
 [build-system]
@@ -45,12 +56,14 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra"
+pythonpath = ["."]
+addopts = "-ra --strict-config --strict-markers"
+filterwarnings = ["error::ResourceWarning", "error::pytest.PytestUnraisableExceptionWarning"]
 
 [tool.mypy]
 python_version = "3.14"
 strict = true
-files = ["src"]
+files = ["src", "scripts"]
 
 [tool.coverage.run]
 source = ["job_radar"]
@@ -58,3 +71,4 @@ branch = true
 
 [tool.coverage.report]
 show_missing = true
+fail_under = 95
