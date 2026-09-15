@@ -8,13 +8,20 @@ runtime design; this is not a promise of unlimited free delivery.
 ## 0. Bootstrap — implemented
 
 - Hexagonal package, strict YAML, typed ports and composition root.
-- 27-source planning catalog, DevOps-first / Full Stack AI profiles.
+- 27-source planning catalog, DevOps-first / Full Stack AI plus frontend, backend,
+  full-stack web and serverless/Lambda profiles.
 - Bounded offline query planner and streaming synthetic JSONL import.
 - Deterministic matching, idempotent job storage, atomic audit and config hashes.
 - CLI diagnostics, JSON completion logs and Prometheus text snapshots.
 - Windows/Linux CI, lint/type/architecture/unit/integration checks.
 
 ## 1. Unified discovery adapter
+
+Implemented subset: `plan --output` to `collect --allow-network`, shared Exa/Jina
+routes, 1–8 I/O threads, request deduplication, bounded subprocess output/time,
+SQLite TTL/negative cache and per-provider circuit breakers. Raw evidence is not
+yet automatically converted into verified applications. Authenticated social/ATS
+capabilities and durable leases below remain pending.
 
 Use Agent Reach as the capability/discovery guide and OpenCLI as the shared scripted
 surface, without a custom API client per job board. Probe installed command manifests
@@ -67,12 +74,20 @@ handling, replayable provenance and no unbounded search when results are scarce.
 
 ## 4. Separately authorized outreach
 
+The direct/assisted implementation is documented in [mail operations](mail.md):
+durable outbox, immutable batch confirmation, fresh Gmail history, quota reservations,
+persistent suppression, provider read-back and explicit reconciliation. Direct OAuth
+now runs without the assistant after personal authorization; the older local relay
+still requires a host session. SDK metadata batching/cache and deterministic message
+templates are implemented and regression-tested without live accounts.
+
 Prepare factual templates from verified job/company/contact evidence. Never invent
 experience, contact addresses or personalization. Start with draft review before a
-separately enabled sender. A Gmail integration is not implemented or assumed ready.
+separately enabled sender. Automatic extraction, continuous workers and automatic
+recovery remain pending. Each installation must authorize its own Gmail credentials.
 
-Desired configurable target: up to **100 emails per rolling 24 hours**, limited by
-provider rules and available eligible opportunities. Reserve quota transactionally
+Desired configurable target: up to **500 emails per rolling 24 hours** in the local
+guard, still limited by provider rules and available eligible opportunities. Reserve quota transactionally
 across workers; include imported recent sent history. A 48-hour recipient/company
 cooldown does not suppress all old Gmail matches forever. Expiry never schedules an
 automatic resend. Persist suppression independently.

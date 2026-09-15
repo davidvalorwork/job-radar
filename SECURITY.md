@@ -1,7 +1,19 @@
 # Security and privacy
 
-This is an early bootstrap, not a production-ready sender. Networking and delivery
-are not implemented. There are no credential fields or hidden cloud exports.
+This is an early implementation, not a production-certified bulk sender. Planning
+and import remain offline. Only explicit `collect --allow-network` sends public
+queries/URLs to Exa/Jina. Mail uses separately authorized Gmail OAuth or a legacy
+host connector relay. See [mail operations](docs/mail.md) and [setup](docs/autonomous.md).
+OAuth files and cached raw evidence must remain private and outside Git. The direct
+adapter requests read/send scopes, not delete/modify scopes. Tokens are not encrypted
+on disk; protect them with filesystem permissions, including Windows ACLs.
+
+The relay directory contains private message bodies, CV bytes and mailbox responses.
+Keep it on a trusted local disk, out of Git, and accessible only to the authorized user.
+A relay must verify request expiry and allowlisted methods, persist a dispatch marker
+before any send, dispatch each ID only once, and write replies atomically. Never
+recover a missing send response by redispatching the request. Local filesystem admins
+can modify relay files and databases; this is not a hostile multi-tenant boundary.
 
 ## Reporting
 

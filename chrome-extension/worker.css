@@ -1,0 +1,5 @@
+body { font: 16px system-ui, sans-serif; background: #f3f5f7; color: #15232e; }
+main { max-width: 760px; margin: 40px auto; padding: 24px; background: white; }
+label { display: block; margin: 20px 0; }
+button, select { padding: 8px; margin-right: 8px; }
+#status { padding: 16px; background: #edf3f8; overflow-wrap: anywhere; }

@@ -30,7 +30,7 @@ subscription, broker, Kubernetes cluster or per-site paid API is required.
 | --- | --- |
 | Configuration | Unknown keys, duplicate IDs/keys, aliases and unsafe enablement fail validation. Canonical config + catalog hash identifies the policy used by each run. |
 | Sources | 27 generic entries; enabled means selected for planning, not authenticated. Native keywords and domain-scoped queries are distinct. Target-only/unavailable entries cannot be enabled yet. |
-| Query plan | Role priority, source priority, normalized query deduplication and a hard output budget. DevOps precedes Full Stack AI. No query is executed. |
+| Query plan | Role priority, source priority, normalized query deduplication and a hard output budget. DevOps precedes Full Stack AI, then the configured web/backend/serverless profiles. No query is executed. |
 | Job identity | SHA-256 of canonical URL: remove common tracking parameters/default ports/fragment; preserve other query parameters. Different URLs are not fuzzily merged yet. |
 | Qualification | Role/title + optional AI context, remote requirement, age, language, company exclusions and preferred keyword score. Missing evidence goes to review, not invented facts. |
 | Storage | WAL, FULL synchronization, foreign keys, bounded lock wait, schema version guard. Each job change and its audit event commit atomically. |
@@ -79,8 +79,13 @@ flowchart LR
   C --> A[Audit + measure + tune]
 ```
 
-Only planning, local normalization/qualification, persistence and basic diagnostics
-are wired today. Each future phase gets its own CLI command and use case; the
+Planning, local normalization/qualification, persistence, basic diagnostics and
+explicit direct/assisted mail delivery are wired today. See [mail flow](mail.md).
+`plan --output` also feeds opt-in `collect`: `application/collection.py` uses Reader
+and ResearchCache ports; the Agent Reach adapter handles bounded subprocesses and
+SQLite evidence. `mail compose` renders reviewed facts without a model. Native Gmail
+reuses the gateway contract through an optional OAuth connector with batched reads.
+Each future phase gets its own CLI command and use case; the
 orchestrator should schedule those same use cases instead of duplicating logic in
 many shell scripts. JSONL is the interchange format; SQLite stores shared durable
 state. See [roadmap](roadmap.md) for acceptance gates.
@@ -89,12 +94,14 @@ Parallelism will be **bounded and adaptive**, not an unbounded process per resul
 an async I/O dispatcher, per-source budgets, a small process pool only for measured
 CPU bottlenecks, bounded queues/backpressure, and one SQLite writer. Browser session
 locks prevent competing workers from changing the same authenticated session.
-There is no parallel live worker implementation or throughput benchmark yet.
+The collector now has a bounded 1–8 thread I/O pool and a single cache writer.
+Adaptive resource scheduling, durable leases and live throughput benchmarks remain pending.
 
 ## Contact policy boundary
 
 The pure `may_contact` guard blocks recent recipient OR verified-company contact
 for 48 hours. Exactly 48 hours ago passes the cooldown; older mailbox history is
 not a permanent duplicate. Suppression, uncertain delivery, and unverified contacts
-still block it. Passing this guard neither creates nor sends a message. A future
-sender also needs fresh relevance, approval, quota reservation and reconciliation.
+still block it. Passing this guard neither creates nor sends a message. The separate
+`DeliverBatch` flow uses fresh evidence, confirmation, transactional quota reservation
+and Gmail read-back; transport is direct OAuth or the legacy authorized connector bridge.

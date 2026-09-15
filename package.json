@@ -1,0 +1,7 @@
+{
+  "name": "job-radar-chrome-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node --test tests/chrome_worker.test.mjs"},
+  "engines": {"node": ">=24"}
+}

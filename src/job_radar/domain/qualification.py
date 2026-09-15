@@ -4,6 +4,7 @@ import re
 from datetime import datetime, timedelta
 from functools import lru_cache
 
+from job_radar.domain.evidence import salary_evidence_requires_review
 from job_radar.domain.models import Decision, Evaluation, FilterPolicy, Job, RoleProfile
 
 
@@ -14,6 +15,27 @@ def _term_pattern(term: str) -> re.Pattern[str]:
 
 def contains_term(text: str, term: str) -> bool:
     return bool(term.strip()) and _term_pattern(term).search(text) is not None
+
+
+def _salary_reason(job: Job, policy: FilterPolicy) -> tuple[str | None, bool]:
+    """Return an auditable reason and whether it rejects, without guessing conversions."""
+    threshold = policy.min_monthly_salary_usd
+    if threshold is None:
+        return None, False
+    if salary_evidence_requires_review(job):
+        return "salary_evidence_requires_review", False
+    lower, upper = job.salary_min_monthly_usd, job.salary_max_monthly_usd
+    if lower is None and upper is None:
+        if job.salary_disclosed:
+            return "salary_conversion_required", False
+        if not policy.include_undisclosed_salary:
+            return "salary_undisclosed", True
+        return None, False
+    if upper is not None and upper <= threshold:
+        return "salary_at_or_below_threshold", True
+    if lower is not None and lower > threshold:
+        return None, False
+    return "salary_range_requires_confirmation", False
 
 
 def evaluate(
@@ -30,18 +52,21 @@ def evaluate(
             rejected.append("not_remote")
         elif job.remote is None:
             review.append("remote_unknown")
-    if job.published_at is None:
-        review.append("publication_date_unknown")
-    elif job.published_at > now:
-        review.append("publication_date_in_future")
-    elif now - job.published_at > timedelta(days=policy.max_age_days):
-        rejected.append("publication_too_old")
-    if job.language is None:
-        review.append("language_unknown")
-    elif policy.languages and job.language.casefold() not in {
-        language.casefold() for language in policy.languages
-    }:
-        rejected.append("language_not_selected")
+    if policy.max_age_days is not None:
+        if job.published_at is None:
+            review.append("publication_date_unknown")
+        elif job.published_at > now:
+            review.append("publication_date_in_future")
+        elif now - job.published_at > timedelta(days=policy.max_age_days):
+            rejected.append("publication_too_old")
+    if policy.languages:
+        if job.language is None:
+            review.append("language_unknown")
+        elif job.language.casefold() not in {language.casefold() for language in policy.languages}:
+            rejected.append("language_not_selected")
+    salary_reason, salary_rejected = _salary_reason(job, policy)
+    if salary_reason:
+        (rejected if salary_rejected else review).append(salary_reason)
     context = f"{job.title}\n{job.description}"
     profile = next(
         (

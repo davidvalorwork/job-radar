@@ -20,6 +20,9 @@ class JobRecord(BaseModel):
     remote: bool | None = None
     published_at: AwareDatetime | None = None
     language: Annotated[str, Field(min_length=2, max_length=16)] | None = None
+    salary_min_monthly_usd: Annotated[float, Field(ge=0, allow_inf_nan=False)] | None = None
+    salary_max_monthly_usd: Annotated[float, Field(ge=0, allow_inf_nan=False)] | None = None
+    salary_disclosed: bool = False
 
 
 class JsonlJobReader:
